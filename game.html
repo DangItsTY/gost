@@ -1,0 +1,477 @@
+<html>
+<head>
+<link rel="shortcut icon" href="">
+<title>Ty's Game</title>
+<style>
+	body { margin: 0; }
+	canvas {
+		padding: 0;
+		margin: auto;
+		display: block;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+	</style>
+</head>
+<body>
+<div id="stats_region" style="width:300px; position:absolute; top:0px; left:0px; color:#FF0000; z-index:1;">
+</div>
+<div id="canvas_region" style="width:100%; height:100%;">
+<div id="loading_region" style="width:100%; height:100%; position:fixed; z-index:9001; background-color:#000000;">
+	<p style="font-size:100px; color:white; text-align:center;">Loading...</p>
+</div>
+<div id="message_region" style="width:600px; height:100px; left:calc(50% - 300px); top: calc(25% - 50px); position:fixed; z-index:9000; background-color:rgba(0, 0, 0, 0.5); color:white; text-align:center; font-size:20pt; padding:10px; display:none;">
+	Deflect!
+</div>
+<!--IMPORT SCRIPTS START-->
+<script src="party/three.min.js"></script>
+<script src="scripts/helper.js"></script>
+<script src="scripts/factory.js"></script>
+<script src="scripts/toybox.js"></script>
+<script src="scripts/player.js"></script>
+<script src="scripts/grass.js"></script>
+<script src="scripts/rock.js"></script>
+<script src="scripts/imploder.js"></script>
+<script src="scripts/golem.js"></script>
+<script src="scripts/geolader.js"></script>
+<script src="scripts/stumper.js"></script>
+<script src="scripts/controls.js"></script>
+<script src="scripts/assets.js"></script>
+<!--IMPORT SCRIPTS END-->
+
+
+<script>
+	//	TyDo:
+	//	exporting, how will i display the data?
+	//	hide gridlines
+	//	dynamically resize the grid
+	//	rename control functions to be more distinguished
+	//	can i cut out the middle man for controls?
+	//	need a way to variable all of these thresholds, like friction threshold and gravity threshold
+	//	users falling, make better collision algorithm
+	//	do the hold alternatives of the abilities
+	//	preload the images
+	//	can i draw just one image, and have objects associated with that texture?
+	//	add fast fall mechanic?
+	
+	//	Notes:
+	//	Singletons shouldn't be called on through other methods
+	
+	//	Presentation - present this game as, move left, move right, action? or should i mention controls
+	
+	//	extend the branches to make it not coral
+	//	think about easy to draw assets for the tiles, don't make it look so pixelarty
+	
+	//	Questions
+	//	is it too floaty?
+	//	should i even tutorial, or just jump straight into the puzzles and let players find out?
+	
+	//	Hacks:
+	var hack1 = false;
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Set up keyboard controls
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	var keysDown = {};	//	Holds a list of all keys that are down
+	var keysUp = {};	//	Keys that are released
+	var keysOnRelease = {};	//	Keys that have just been released
+	addEventListener("keydown", function (e) {
+		keysDown[e.keyCode] = true;
+	}, false);
+	addEventListener("keyup", function (e) {
+		keysUp[e.keyCode] = true;
+		delete keysDown[e.keyCode];
+	}, false);
+	addEventListener("keyup", function (e) {
+		//	kind of funky, this is for when a button is released
+		keysOnRelease[e.keyCode] = true;
+	}, false);
+
+	//	Key Mapping
+	var key = new Array();
+	key["up"] = 87;
+	key["down"] = 83;
+	key["left"] = 65;
+	key["right"] = 68;
+	key["y"] = 78;
+	key["x"] = 74;
+	key["b"] = 69;
+	key["a"] = 81;
+	key["l"] = 16;
+	key["r"] = 186;
+	key["start"] = 80;
+	key["select"] = 13;
+	key["spacebar"] = 32;
+	key["0"] = 48;
+	key["1"] = 49;
+	key["2"] = 50;
+	key["3"] = 51;
+	key["4"] = 52;
+	key["5"] = 53;
+	key["6"] = 54;
+	key["7"] = 55;
+	key["8"] = 56;
+	key["9"] = 57;
+	
+	//	Mouse Coordinates
+	var mouseX;
+	var mouseY;
+	document.onmousemove = function(e) {
+		mouseX = e.clientX;
+		mouseY = e.clientY;
+	};
+	document.onmousedown = function(e) {
+		if (mouseX >= ((window.innerWidth - 1600) / 2) && mouseX <= window.innerWidth - ((window.innerWidth - 1600) / 2) &&
+			mouseY >= ((window.innerHeight - 900) / 2) && mouseY <= window.innerHeight - ((window.innerHeight - 900) / 2)) {
+			keysDown["mouse"] = true;
+			delete keysUp["mouse"];
+		}
+	};
+	document.onmouseup = function(e) {
+		mouseUp();
+		keysUp["mouse"] = true;
+		delete keysDown["mouse"];
+	};
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Create the scene
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	var scene = new THREE.Scene();
+	var camera = new THREE.OrthographicCamera(-16, 16, 9, -9, -1000, 1000);
+	var renderer = new THREE.WebGLRenderer();
+	var windowSize = window.innerHeight/90 - 1;
+	var windowWidth = 160 * windowSize;
+	var windowHeight = 90 * windowSize;
+	renderer.setSize(windowWidth, windowHeight);
+	document.getElementById("canvas_region").appendChild(renderer.domElement);
+
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Set up game engine things
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	renderer.setClearColor('#000000');
+	camera.position.x = 15.5;
+	camera.position.y = 8.5;
+	camera.position.z = 0;
+	camera.rotation.x = 180 * Math.PI/180;
+	time_then = window.performance.now();
+	var ROWS_TOTAL = 18;
+	var COLUMNS_TOTAL = 32;
+	var UP_DIRECTION = -1;	//	because the grid is 0, 0 at the very top left
+	var GRAVITY_POWER = 12;
+	var FRICTION_POWER = 24;
+	var PLAYER_ID = -1;
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Initialize game with objects
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	var theHelper = new helper();
+	var theTestHelper = new test_helper();
+	var theObjectFactory = new factory();
+	var theTileFactory = new factory();
+	var theController = new controller();
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Initial scripts to run
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	loadAssets();	
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Playground
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
+	theObjectFactory.create(new player(2, 15, theObjectFactory.zindex.objects));
+	theController.register(theObjectFactory.justAdded());
+	PLAYER_ID = theObjectFactory.list.length-1;
+	
+	/*
+	theObjectFactory.create(new imploder(2, 15, theObjectFactory.zindex.objects));
+	theObjectFactory.create(new imploder(29, 15, theObjectFactory.zindex.objects));
+	theObjectFactory.create(new candy(10, 16, theObjectFactory.zindex.objects));
+	setInterval(function() {
+		var num = theHelper.roll(2);
+		var num2 = theHelper.roll(100);
+		var side;
+		switch (num) {
+			case 1:
+				side = 5;
+				break;
+			case 2:
+				side = 26;
+				break;
+			default:
+				side = 2;
+		}
+		
+		if (num2 < 55) {
+			theObjectFactory.create(new imploder(side, 10, theObjectFactory.zindex.objects));
+		} else if (num2 < 75) {
+			theObjectFactory.create(new imploder4(side, 10, theObjectFactory.zindex.objects));
+		} else if (num2 < 90) {
+			theObjectFactory.create(new imploder2(side, 10, theObjectFactory.zindex.objects));
+		} else {
+			theObjectFactory.create(new imploder3(side, 10, theObjectFactory.zindex.objects));
+		}
+	}, 5000);
+	*/
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Preload
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	function preload() {
+		var iPromise = new Promise(
+			function(resolve, reject) {
+				window.setTimeout(
+					function() {
+						reject("took 10 seconds longer to load");
+					}
+				, 10000);
+				
+				
+				//	The preloading code
+				theTileFactory.loader.load(4);
+				renderer.render(scene, camera);
+				
+				
+				window.setTimeout(
+					function() {
+						resolve("complete");
+					}
+				, 3000);
+			}
+		);
+		iPromise.then(
+			function(val) {
+				document.getElementById("loading_region").style.display = "none";
+				gameloop();
+				console.log("Loading success: " + val);
+			}
+		).catch(
+			function(reason) {
+				console.log("Loading error: " + reason);
+			}
+		);
+	}
+	preload();
+
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Batches
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	function runControls() {
+		if (key["left"] in keysDown && !(keysUp["left"])) {
+			//	should probably have this be an example of how to handle controls
+			theController.target.leftTap();
+			keysUp["left"] = true;
+		}
+		if (key["right"] in keysDown && !(keysUp["right"])) {
+			theController.target.rightTap();
+			keysUp["right"] = true;
+		}
+		if (key["left"] in keysDown && !(key["right"] in keysDown)) {
+			theController.target.leftHold(-1);
+		}
+		if (key["right"] in keysDown && !(key["left"] in keysDown)) {
+			theController.target.rightHold(1);
+		}
+		if ((!(key["left"] in keysDown) && !(key["right"] in keysDown)) ||
+			(key["left"] in keysDown && key["right"] in keysDown)) {
+			stop(theController.target);
+		}
+		if (key["up"] in keysDown) {
+			//move_vertical(1, theController.target);
+		}
+		if (key["down"] in keysDown) {
+			//move_vertical(-1, theController.target);
+		}
+		if (key["spacebar"] in keysDown && !(keysUp["spacebar"])) {
+			theController.target.actionTap();
+			keysUp["spacebar"] = true;
+		}
+		if (key["spacebar"] in keysDown) {
+			theController.target.actionHold();
+		}
+		if (key["spacebar"] in keysOnRelease) {
+			theController.target.actionRelease();
+			delete keysOnRelease[key["spacebar"]];
+		}
+		
+		//	reset keys
+		if (!(key["spacebar"] in keysDown)) {
+			delete keysUp["spacebar"];
+		}
+		if (!(key["left"] in keysDown)) {
+			delete keysUp["left"];
+		}
+		if (!(key["right"] in keysDown)) {
+			delete keysUp["right"];
+		}
+	}
+	
+	function runActs() {
+		//	apply physics
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			theObjectFactory.list[i].prevX = theObjectFactory.list[i].x;
+			theObjectFactory.list[i].prevY = theObjectFactory.list[i].y;
+			theObjectFactory.list[i].act();
+			
+			//	gravity
+			if (theObjectFactory.list[i].ay === 0 && !(theObjectFactory.list[i].isGrounded)) {
+				theObjectFactory.list[i].vy += theObjectFactory.list[i].weight*GRAVITY_POWER*modifier*UP_DIRECTION*-1;
+			}
+			
+			//	friction - if no force acts on object, then apply friction
+			if (theObjectFactory.list[i].ax === 0 && Math.abs(theObjectFactory.list[i].vx) > 1 && theObjectFactory.list[i].isGrounded) {
+				theObjectFactory.list[i].vx += theObjectFactory.list[i].weight*FRICTION_POWER*modifier*(theObjectFactory.list[i].vx/Math.abs(theObjectFactory.list[i].vx))*-1;
+			} else if (Math.abs(theObjectFactory.list[i].vx) <= 1) {
+				theObjectFactory.list[i].vx = 0;
+			}
+			
+			//	acceleration
+			theObjectFactory.list[i].vx += theObjectFactory.list[i].ax*modifier;
+			theObjectFactory.list[i].vy += theObjectFactory.list[i].ay*modifier;
+			
+			//	velocity
+			theObjectFactory.list[i].x += theObjectFactory.list[i].vx*modifier;
+			theObjectFactory.list[i].y += theObjectFactory.list[i].vy*modifier;
+		}
+	}
+	
+	function runCollisions() {
+		//	all objects check with tile objects
+		//	using a box collision, first do initial collision
+		//	then do series of down, left, right, up collisions
+		//	finally, do one more collision function for any resolving issues
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			theObjectFactory.list[i].collide_setup();
+		}
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			for (j = 0; j < theTileFactory.list.length; j++) {
+				var col1 = theObjectFactory.list[i];
+				var col2 = theTileFactory.list[j];
+				if (collision_box(col1, col2)) {
+					col1.collide_begin(col2);
+					if (collision_down(col1, col2)) {
+						col1.collide_down(col2);
+					} else if (collision_left(col1, col2)) {
+						col1.collide_left(col2);
+					} else if (collision_right(col1, col2)) {
+						col1.collide_right(col2);
+					} else if (collision_up(col1, col2)) {
+						col1.collide_up(col2);
+					}
+					col1.collide_end(col2);
+				}
+			}
+		}
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			for (j = i+1; j < theObjectFactory.list.length; j++) {
+				var col1 = theObjectFactory.list[i];
+				var col2 = theObjectFactory.list[j];
+				if (collision_box(col1, col2)) {
+					col1.collide_begin(col2);
+					col2.collide_begin(col1);
+					if (collision_down(col1, col2)) {
+						col1.collide_down(col2);
+						col2.collide_up(col1);
+					} else if (collision_left(col1, col2)) {
+						col1.collide_left(col2);
+						col2.collide_right(col1);
+					} else if (collision_right(col1, col2)) {
+						col1.collide_right(col2);
+						col2.collide_left(col1);
+					} else if (collision_up(col1, col2)) {
+						col1.collide_up(col2);
+						col2.collide_down(col1);
+					}
+					col1.collide_end(col2);
+					col2.collide_end(col1);
+				}
+			}
+		}
+	}
+	
+	function runUpdateSprites() {
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			theObjectFactory.list[i].sprite.position.x = theObjectFactory.list[i].x;
+			theObjectFactory.list[i].sprite.position.y = theObjectFactory.list[i].y;
+			theObjectFactory.list[i].sprite.position.z = theObjectFactory.list[i].z;
+		}
+		for (i = 0; i < theTileFactory.list.length; i++) {
+			theTileFactory.list[i].sprite.position.x = theTileFactory.list[i].x;
+			theTileFactory.list[i].sprite.position.y = theTileFactory.list[i].y;
+			theTileFactory.list[i].sprite.position.z = theTileFactory.list[i].z;
+		}
+	}
+	
+	function runDebug() {
+		var html = "";
+		html += "Left - A<br>";
+		html += "Right - D<br>";
+		html += "Jump - Spacebar<br>";
+		html += "Attack - Spacebar (after jump)<br>";
+		html += "Defend - Spacebar (after attack)<br>";
+		html += "Dash - Double Tap Left or Right";
+		html += "<br>";
+		html += "<br>";
+		html += "Player VY: " + theObjectFactory.list[PLAYER_ID].vy + "<br>";
+		html += "Player VX: " + theObjectFactory.list[PLAYER_ID].vx + "<br>";
+		html += "Player wallClimb: " + theObjectFactory.list[PLAYER_ID].wallClimb + "<br>";
+		html += "Player isGrounded: " + theObjectFactory.list[PLAYER_ID].isGrounded + "<br>";
+		html += "Player moveDisable: " + theObjectFactory.list[PLAYER_ID].moveDisable + "<br>";
+		html += "Player ax: " + theObjectFactory.list[PLAYER_ID].ax + "<br>";
+		html += "Player Health: " + theObjectFactory.list[PLAYER_ID].health + "<br>";
+		html += "Player isInvincible: " + theObjectFactory.list[PLAYER_ID].isInvincible + "<br>";
+		html += "Player X: " + theObjectFactory.list[PLAYER_ID].x + "<br>";
+		html += "Player Y: " + theObjectFactory.list[PLAYER_ID].y + "<br>";
+		html += "modifier: " + modifier + "<br>";
+		document.getElementById("stats_region").innerHTML = html;
+	}
+	
+	function runCleanup() {
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			if (!(theObjectFactory.list[i].alive)) {
+				theObjectFactory.destroy(i);
+			}
+		}
+	}
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	The game loop
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	function gameloop() {
+		window.requestAnimationFrame(gameloop);
+		
+		//	calculate delta frame time
+		time_now = window.performance.now();
+		time_delta = time_now - time_then;
+		if (time_delta > 500) {
+			time_delta = 0;
+		}
+		modifier = time_delta/1000;
+		time_then = time_now;
+				
+		//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+		//	Do things (batch scripts)
+		//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+		runControls();
+		runActs();
+		runCollisions();
+		runUpdateSprites();
+		runCleanup();
+		runDebug();
+		renderer.render(scene, camera);
+	}
+</script>
+</body>
+</html>
