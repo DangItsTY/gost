@@ -1,58 +1,56 @@
 function imploder(x, y, z) {
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Properties
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Entity Info
 	this.name = "imploder";
+	this.id = 2;
+	this.type = "enemy";
+	this.team = -1;
+	
+	//	Physics
 	this.x = x;
 	this.y = y;
 	this.z = z;
-	this.id = 2;
-	this.speed = 4;
 	this.vx = 0;
 	this.vy = 0;
 	this.ax = 0;
 	this.ay = 0;
+	this.speed = 4;
 	this.jumpSpeed = 4;
+	this.direction = 1;
 	this.weight = 1;
+	this.strength = 1;
+	this.health = 3;
+	this.damageType = "none";
+	
+	//	Collision Info
 	this.prevX = 0;
 	this.prevY = 0;
 	this.collisionSize = 1;
 	this.collisionType = "solid";
+	
+	//	States
+	this.actionState = 1;
 	this.alive = true;
 	this.isGrounded = true;
-	this.actionState = 1;
+	
+	//	Timers
 	this.moveTimer = 0;
 	this.moveTimerMax = 2.0;
-	this.type = "enemy";
-	this.isGrounded = true;
-	this.strength = 1;
-	this.health = 3;
 	this.invincibleHitTimer = 0;
 	this.invincibleHitTimerMax = 0.3;
-	this.team = -1;
-	this.direction = 1;
 	
+	//	Sprite
 	this.material = new THREE.SpriteMaterial({map: assets_imploder, color: 0xFFFFFF, fog: true});
 	this.sprite = new THREE.Sprite(this.material);
 	this.sprite.position.set(this.x, this.y, this.z);
 	this.sprite.scale.set(1, 1, 1);
 	scene.add(this.sprite);
 	
-	this.move = function() {
-		if (!(this.isGrounded) && this.invincibleHitTimer === 0) {
-			if (Math.abs(this.vy) > 1) {
-				this.vx = this.speed*this.direction;
-			}
-		}
-	};
-	
-	this.chasePlayer = function() {
-		this.vy = this.jumpSpeed*UP_DIRECTION;
-		if (this.x > theObjectFactory.list[PLAYER_ID].x) {
-			this.direction = -1;
-		} else {
-			this.direction = 1;
-		}
-		this.sprite.scale.set(this.direction, this.sprite.scale.y, this.sprite.scale.z);
-	};
-	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Basic Behaviors
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	this.act = function() {		
 		if (this.moveTimer <= 1) {
 			this.move();
@@ -77,20 +75,21 @@ function imploder(x, y, z) {
 	};
 	
 	this.damage = function(source) {
-		if (this.invincibleHitTimer === 0) {
-			this.health -= source.strength;
-			var magnitude = Math.abs(source.vx);
-			if (magnitude < 2) {
-				magnitude = 2;
-			}
-			this.vx = magnitude*source.direction;
-			this.vy = 4*UP_DIRECTION;
-			this.invincibleHitTimer = this.invincibleHitTimerMax;
-		}
-		if (this.health <= 0) {
-			this.alive = false;
-		}
+		damage_enemy_basic(this, source);
 	};
+
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Other Behaviors
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	this.move = function() {
+		move_enemy_basic(this);
+	};
+	
+	this.chasePlayer = function() {
+		chasePlayer(this);
+	};
+	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Collisions
@@ -154,96 +153,7 @@ function imploder(x, y, z) {
 	};
 }
 
-function spit(x, y, z) {
-	this.x = x;
-	this.y = y;
-	this.z = z;
-	this.id = 7;	//	always +1 this for each new object
-	this.speed = 8;
-	this.vx = 0;
-	this.vy = 0;
-	this.ax = 0;
-	this.ay = 0;
-	this.weight = 0;
-	this.collisionSize = 0.5;
-	this.collisionType = "projectile";
-	this.direction = 1;
-	this.deathTimerMax = 2.0;
-	this.deathTimer = this.deathTimerMax;
-	this.alive = true;
-	this.isGrounded = false;
-	this.strength = 1;
-	this.health = 1;
-	this.type = "projectile";
-	this.team = -1;
-	this.damageType = "evil";
-	
-	this.material = new THREE.SpriteMaterial({map: assets_spit, color: 0xFFFFFF, fog: false});
-	this.sprite = new THREE.Sprite(this.material);
-	this.sprite.position.set(this.x, this.y, this.z);
-	this.sprite.scale.set(1, 1, 1);
-	scene.add(this.sprite);
-	
-	this.move = function() {
-		this.vx = this.speed*this.direction;
-	}
-	
-	this.damage = function(source) {
-		
-	}
-	
-	this.deathTimerTick = function() {
-		//	make this into a helper function for simple timer?
-		if (this.deathTimer > 0) {
-			this.deathTimer -= modifier;
-		} else {
-			this.deathTimer = 0;
-			this.alive = false;
-		}
-	}
-	this.act = function() {
-		this.move();
-		this.deathTimerTick();
-	}
-	
-	
-	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	//	Collisions
-	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	this.collide_setup = function() {
-
-	};
-	
-	this.collide_begin = function(target) {
-		if (target.team === this.team*-1) {
-			target.damage(this);
-		}
-		if (target.team !== this.team && target.type !== "projectile" && !(target.isInvincible)) {
-			this.alive = false;
-		}
-	};
-	
-	this.collide_down = function(target) {
-
-	};
-	
-	this.collide_left = function(target) {
-
-	};
-	
-	this.collide_right = function(target) {
-
-	};
-	
-	this.collide_up = function(target) {
-
-	};
-	
-	this.collide_end = function(target) {
-	
-	};
-}
-
+/* can delete this */
 function spit_artillery(x, y, z) {
 	this.x = x;
 	this.y = y;

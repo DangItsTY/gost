@@ -1,34 +1,45 @@
 function stumper(x, y, z) {
+	//	Entity Info
 	this.name = "stumper";
+	this.id = 2;
+	this.type = "enemy";
+	this.team = -1;
+	
+	//	Physics
 	this.x = x;
 	this.y = y;
 	this.z = z;
-	this.id = 2;
-	this.speed = 4;
 	this.vx = 0;
 	this.vy = 0;
 	this.ax = 0;
 	this.ay = 0;
+	this.speed = 4;
 	this.jumpSpeed = 4;
+	this.direction = 1;
 	this.weight = 1;
+	this.strength = 1;
+	this.health = 10;
+	this.damageType = "none";
+	
+	//	Collision Info
 	this.prevX = 0;
 	this.prevY = 0;
 	this.collisionSize = 3;
+	this.collisionType = "solid";
+	
+	//	States
+	this.actionState = 1;
 	this.alive = true;
 	this.isGrounded = true;
-	this.actionState = 1;
-	this.moveTimer = 0;
-	this.moveTimerMax = 2.0;
-	this.type = "enemy";
-	this.isGrounded = true;
-	this.strength = 1;
-	this.health = 10;
-	this.invincibleHitTimer = 0;
-	this.invincibleHitTimerMax = 0.3;
-	this.team = -1;
-	this.direction = 1;
 	this.attackReady = false;
 	
+	//	Timers
+	this.moveTimer = 0;
+	this.moveTimerMax = 2.0;
+	this.invincibleHitTimer = 0;
+	this.invincibleHitTimerMax = 0.3;
+	
+	//	Sprite
 	this.material = new THREE.SpriteMaterial({map: assets_imploder, color: 0xFFFFFF, fog: true});
 	this.sprite = new THREE.Sprite(this.material);
 	this.sprite.position.set(this.x, this.y, this.z);

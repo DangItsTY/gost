@@ -30,14 +30,22 @@
 <script src="party/three.min.js"></script>
 <script src="scripts/helper.js"></script>
 <script src="scripts/factory.js"></script>
-<script src="scripts/toybox.js"></script>
-<script src="scripts/player.js"></script>
-<script src="scripts/grass.js"></script>
-<script src="scripts/rock.js"></script>
-<script src="scripts/imploder.js"></script>
-<script src="scripts/golem.js"></script>
-<script src="scripts/geolader.js"></script>
-<script src="scripts/stumper.js"></script>
+<script src="toybox/toybox.js"></script>
+<script src="toybox/player.js"></script>
+<script src="toybox/player_attack.js"></script>
+<script src="toybox/player_attackBullet.js"></script>
+<script src="toybox/player_defend.js"></script>
+<script src="toybox/player_reflect.js"></script>
+<script src="toybox/grass.js"></script>
+<script src="toybox/rock.js"></script>
+<script src="toybox/imploder.js"></script>
+<script src="toybox/spit.js"></script>
+<script src="toybox/golem.js"></script>
+<script src="toybox/geolader.js"></script>
+<script src="toybox/stumper.js"></script>
+<script src="toybox/startPortal.js"></script>
+<script src="toybox/endPortal.js"></script>
+<script src="toybox/background.js"></script>
 <script src="scripts/controls.js"></script>
 <script src="scripts/assets.js"></script>
 <!--IMPORT SCRIPTS END-->
@@ -166,6 +174,7 @@
 	var GRAVITY_POWER = 12;
 	var FRICTION_POWER = 24;
 	var PLAYER_ID = -1;
+	var game_level = 1;
 	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
@@ -181,7 +190,8 @@
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Initial scripts to run
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	loadAssets();	
+	//	maybe do this in the preload section?
+	loadAssets();
 	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
@@ -223,6 +233,21 @@
 	}, 5000);
 	*/
 	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Reset Game
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	function gameReset() {
+		document.getElementById("loading_region").style.display = "inline";
+		scene.children = [];
+		theObjectFactory = new factory();
+		theTileFactory = new factory();
+	
+		theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
+		theObjectFactory.create(new player(2, 15, theObjectFactory.zindex.objects));
+		theController.register(theObjectFactory.justAdded());
+		PLAYER_ID = theObjectFactory.list.length-1;
+	}
+	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Preload
@@ -238,7 +263,7 @@
 				
 				
 				//	The preloading code
-				theTileFactory.loader.load(4);
+				theTileFactory.loader.load(game_level);
 				renderer.render(scene, camera);
 				
 				
@@ -262,7 +287,7 @@
 		);
 	}
 	preload();
-
+	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Batches
