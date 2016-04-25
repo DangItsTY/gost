@@ -66,10 +66,10 @@ function endPortal(x, y, z) {
 	};
 	
 	this.collide_begin = function(target) {
-		game_level = game_level + 1;
-		gameReset();
-		preload();
-		console.log("level: " + game_level);
+		if (target.type === "player") {
+			game_level += 1;
+			gameReset();
+		}
 	};
 	
 	this.collide_down = function(target) {

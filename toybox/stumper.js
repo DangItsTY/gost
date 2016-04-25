@@ -56,7 +56,7 @@ function stumper(x, y, z) {
 	
 	this.chasePlayer = function() {
 		this.vy = this.jumpSpeed*UP_DIRECTION;
-		if (this.x > theObjectFactory.list[PLAYER_ID].x) {
+		if (this.x > THEPLAYER.x) {
 			this.direction = -1;
 		} else {
 			this.direction = 1;

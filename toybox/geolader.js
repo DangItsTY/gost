@@ -46,7 +46,7 @@ function geolader(x, y, z) {
 	scene.add(this.sprite);
 	
 	this.facePlayer = function() {
-		if (this.x > theObjectFactory.list[PLAYER_ID].x) {
+		if (this.x > THEPLAYER.x) {
 			this.direction = -1;
 		} else {
 			this.direction = 1;

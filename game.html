@@ -173,7 +173,8 @@
 	var UP_DIRECTION = -1;	//	because the grid is 0, 0 at the very top left
 	var GRAVITY_POWER = 12;
 	var FRICTION_POWER = 24;
-	var PLAYER_ID = -1;
+	var THEPLAYER = null;
+	var THESTARTPORTAL = null;
 	var game_level = 1;
 	
 	
@@ -197,10 +198,7 @@
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Playground
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
-	theObjectFactory.create(new player(2, 15, theObjectFactory.zindex.objects));
-	theController.register(theObjectFactory.justAdded());
-	PLAYER_ID = theObjectFactory.list.length-1;
+	
 	
 	/*
 	theObjectFactory.create(new imploder(2, 15, theObjectFactory.zindex.objects));
@@ -238,14 +236,12 @@
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	function gameReset() {
 		document.getElementById("loading_region").style.display = "inline";
+		window.cancelAnimationFrame(game_loop_loop);
 		scene.children = [];
 		theObjectFactory = new factory();
 		theTileFactory = new factory();
-	
-		theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
-		theObjectFactory.create(new player(2, 15, theObjectFactory.zindex.objects));
-		theController.register(theObjectFactory.justAdded());
-		PLAYER_ID = theObjectFactory.list.length-1;
+		
+		preload();
 	}
 	
 	
@@ -277,6 +273,10 @@
 		iPromise.then(
 			function(val) {
 				document.getElementById("loading_region").style.display = "none";
+				theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
+				theObjectFactory.create(new player(THESTARTPORTAL.x, THESTARTPORTAL.y, theObjectFactory.zindex.objects));
+				theController.register(theObjectFactory.justAdded());
+				THEPLAYER = theObjectFactory.justAdded();
 				gameloop();
 				console.log("Loading success: " + val);
 			}
@@ -448,16 +448,16 @@
 		html += "Dash - Double Tap Left or Right";
 		html += "<br>";
 		html += "<br>";
-		html += "Player VY: " + theObjectFactory.list[PLAYER_ID].vy + "<br>";
-		html += "Player VX: " + theObjectFactory.list[PLAYER_ID].vx + "<br>";
-		html += "Player wallClimb: " + theObjectFactory.list[PLAYER_ID].wallClimb + "<br>";
-		html += "Player isGrounded: " + theObjectFactory.list[PLAYER_ID].isGrounded + "<br>";
-		html += "Player moveDisable: " + theObjectFactory.list[PLAYER_ID].moveDisable + "<br>";
-		html += "Player ax: " + theObjectFactory.list[PLAYER_ID].ax + "<br>";
-		html += "Player Health: " + theObjectFactory.list[PLAYER_ID].health + "<br>";
-		html += "Player isInvincible: " + theObjectFactory.list[PLAYER_ID].isInvincible + "<br>";
-		html += "Player X: " + theObjectFactory.list[PLAYER_ID].x + "<br>";
-		html += "Player Y: " + theObjectFactory.list[PLAYER_ID].y + "<br>";
+		html += "Player VY: " + THEPLAYER.vy + "<br>";
+		html += "Player VX: " + THEPLAYER.vx + "<br>";
+		html += "Player wallClimb: " + THEPLAYER.wallClimb + "<br>";
+		html += "Player isGrounded: " + THEPLAYER.isGrounded + "<br>";
+		html += "Player moveDisable: " + THEPLAYER.moveDisable + "<br>";
+		html += "Player ax: " + THEPLAYER.ax + "<br>";
+		html += "Player Health: " + THEPLAYER.health + "<br>";
+		html += "Player isInvincible: " + THEPLAYER.isInvincible + "<br>";
+		html += "Player X: " + THEPLAYER.x + "<br>";
+		html += "Player Y: " + THEPLAYER.y + "<br>";
 		html += "modifier: " + modifier + "<br>";
 		document.getElementById("stats_region").innerHTML = html;
 	}
@@ -475,7 +475,7 @@
 	//	The game loop
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	function gameloop() {
-		window.requestAnimationFrame(gameloop);
+		game_loop_loop = window.requestAnimationFrame(gameloop);
 		
 		//	calculate delta frame time
 		time_now = window.performance.now();

@@ -34,7 +34,7 @@ function planter(x, y, z) {
 	
 	this.chasePlayer = function() {
 		if (this.actionState === 1) {
-			if (this.x > theObjectFactory.list[PLAYER_ID].x) {
+			if (this.x > THEPLAYER.x) {
 				this.direction = -1;
 			} else {
 				this.direction = 1;
@@ -132,95 +132,3 @@ function candy(x, y, z) {
 	
 	};
 }
-
-
-
-
-
-
-
-
-
-
-
-
-//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-//	Common functions (temporary living space)
-//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-function collide_down_basic(me, target) {
-	if(target.collisionType === "solid" && target.type === "tile") {
-		if (me.vy / Math.abs(me.vy) === UP_DIRECTION*-1) {
-			me.vy = 0;
-			me.actionState = 0;
-			me.y = target.y-1;
-			me.isGrounded = true;
-		}
-	}
-}
-
-function collide_left_basic(me, target) {
-	if(target.collisionType === "solid" && target.type === "tile") {
-		if (!(collision_up(me, target))) {
-			me.vx = 0;
-			me.x = target.x+1;
-			if (key["left"] in keysDown && !(me.isGrounded)) {
-				me.wallClimb = true;
-			}
-		}
-	}
-}
-
-function collide_right_basic(me, target) {
-	if(target.collisionType === "solid" && target.type === "tile") {
-		if (!(collision_up(me, target))) {
-			me.vx = 0;
-			me.x = target.x-1;
-			if (key["right"] in keysDown && !(me.isGrounded)) {
-				me.wallClimb = true;
-			}
-		}
-	}
-}
-
-function collide_up_basic(me, target) {
-	if(target.collisionType === "solid" && target.type === "tile") {
-		if (me.vy / Math.abs(me.vy) === UP_DIRECTION) {
-			me.vy = 0;
-		}
-		me.y = target.y+1;
-	}
-}
-
-function chasePlayer(me) {
-	me.vy = me.jumpSpeed*UP_DIRECTION;
-	if (me.x > theObjectFactory.list[PLAYER_ID].x) {
-		me.direction = -1;
-	} else {
-		me.direction = 1;
-	}
-	me.sprite.scale.set(me.direction, me.sprite.scale.y, me.sprite.scale.z);
-};
-
-function move_enemy_basic(me) {
-	if (!(me.isGrounded) && me.invincibleHitTimer === 0) {
-		if (Math.abs(me.vy) > 1) {
-			me.vx = me.speed*me.direction;
-		}
-	}
-};
-
-function damage_enemy_basic(me, source) {
-	if (me.invincibleHitTimer === 0) {
-		me.health -= source.strength;
-		var magnitude = Math.abs(source.vx);
-		if (magnitude < 2) {
-			magnitude = 2;
-		}
-		me.vx = magnitude*source.direction;
-		me.vy = 4*UP_DIRECTION;
-		me.invincibleHitTimer = me.invincibleHitTimerMax;
-	}
-	if (me.health <= 0) {
-		me.alive = false;
-	}
-};

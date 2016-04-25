@@ -185,8 +185,8 @@ function player(x, y, z) {
 	
 	this.replay = function() {
 		//	restarts the player
-		this.x = 2;
-		this.y = 15;
+		this.x = THESTARTPORTAL.x;
+		this.y = THESTARTPORTAL.y;
 		this.vx = 0;
 		this.vy = 0;
 		this.ax = 0;

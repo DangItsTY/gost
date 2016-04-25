@@ -75,7 +75,19 @@ function imploder(x, y, z) {
 	};
 	
 	this.damage = function(source) {
-		damage_enemy_basic(this, source);
+		if (this.invincibleHitTimer === 0) {
+			this.health -= source.strength;
+			var magnitude = Math.abs(source.vx);
+			if (magnitude < 2) {
+				magnitude = 2;
+			}
+			this.vx = magnitude*source.direction;
+			this.vy = 4*UP_DIRECTION;
+			this.invincibleHitTimer = this.invincibleHitTimerMax;
+		}
+		if (this.health <= 0) {
+			this.alive = false;
+		}
 	};
 
 	
@@ -83,11 +95,21 @@ function imploder(x, y, z) {
 	//	Other Behaviors
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	this.move = function() {
-		move_enemy_basic(this);
+		if (!(this.isGrounded) && this.invincibleHitTimer === 0) {
+			if (Math.abs(this.vy) > 1) {
+				this.vx = this.speed*this.direction;
+			}
+		}
 	};
 	
 	this.chasePlayer = function() {
-		chasePlayer(this);
+		this.vy = this.jumpSpeed*UP_DIRECTION;
+		if (this.x > THEPLAYER.x) {
+			this.direction = -1;
+		} else {
+			this.direction = 1;
+		}
+		this.sprite.scale.set(this.direction, this.sprite.scale.y, this.sprite.scale.z);
 	};
 	
 	
@@ -102,15 +124,10 @@ function imploder(x, y, z) {
 		if (target.type === "player" && this.invincibleHitTimer === 0) {
 			target.damage(this);
 		}
-		if (target.type === "enemy") {
-			this.moveTimer = 1;
-		}
 	};
 	
 	this.collide_down = function(target) {
-		if (target.type === "enemy") {
-			this.vy = -4;
-		} else if(target.collisionType === "solid" && target.type === "tile") {
+		if(target.collisionType === "solid" && target.type === "tile") {
 			if (this.vy / Math.abs(this.vy) === UP_DIRECTION*-1) {
 				this.vy = 0;
 				this.y = target.y-1;
@@ -122,25 +139,29 @@ function imploder(x, y, z) {
 	this.collide_left = function(target) {
 		if(target.collisionType === "solid" && target.type === "tile") {
 			if (!(collision_up(this, target))) {
-				this.vx = 0;
+				this.vx = this.speed;
 				this.x = target.x+1;
 			}
+		} else if (target.type === "enemy") {
+			this.direction = 1;
+			this.vx += this.speed * this.direction;
 		}
 	};
 	
 	this.collide_right = function(target) {
 		if(target.collisionType === "solid" && target.type === "tile") {
 			if (!(collision_up(this, target))) {
-				this.vx = 0;
+				this.vx = this.speed * -1;
 				this.x = target.x-1;
 			}
+		} else if (target.type === "enemy") {
+			this.direction = -1;
+			this.vx += this.speed * this.direction;
 		}
 	};
 	
 	this.collide_up = function(target) {
-		if (target.type === "enemy") {
-			this.vy = 4;
-		} else if(target.collisionType === "solid" && target.type === "tile") {
+		if(target.collisionType === "solid" && target.type === "tile") {
 			if (this.vy / Math.abs(this.vy) === UP_DIRECTION) {
 				this.vy = 0;
 			}
@@ -316,7 +337,7 @@ function imploder2(x, y, z) {
 	
 	this.chasePlayer = function() {
 		this.vy = this.jumpSpeed*UP_DIRECTION;
-		if (this.x > theObjectFactory.list[PLAYER_ID].x) {
+		if (this.x > THEPLAYER.x) {
 			this.direction = -1;
 		} else {
 			this.direction = 1;
@@ -472,7 +493,7 @@ function imploder3(x, y, z) {
 	
 	this.chasePlayer = function() {
 		this.vy = this.jumpSpeed*UP_DIRECTION;
-		if (this.x > theObjectFactory.list[PLAYER_ID].x) {
+		if (this.x > THEPLAYER.x) {
 			this.direction = -1;
 		} else {
 			this.direction = 1;
@@ -637,7 +658,7 @@ function imploder4(x, y, z) {
 	
 	this.chasePlayer = function() {
 		this.vy = this.jumpSpeed*UP_DIRECTION;
-		if (this.x > theObjectFactory.list[PLAYER_ID].x) {
+		if (this.x > THEPLAYER.x) {
 			this.direction = -1;
 		} else {
 			this.direction = 1;

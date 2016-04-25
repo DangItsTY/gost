@@ -33,7 +33,7 @@ function player_reflect(x, y, z) {
 	this.isInvincible = true;
 	
 	//	Timers
-	this.deathTimerMax = 1.0;
+	this.deathTimerMax = 0.25;
 	this.deathTimer = this.deathTimerMax;
 	
 	//	Sprite
@@ -44,8 +44,8 @@ function player_reflect(x, y, z) {
 	scene.add(this.sprite);
 	
 	this.followPlayer = function() {
-		this.x = theObjectFactory.list[PLAYER_ID].x;
-		this.y = theObjectFactory.list[PLAYER_ID].y;
+		this.x = THEPLAYER.x;
+		this.y = THEPLAYER.y;
 	}
 	
 	this.damage = function(source) {

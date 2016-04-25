@@ -41,6 +41,7 @@ function factory() {
 				break;
 			case 2005:
 				this.list.push(new startPortal(x, y, this.zindex.objects));
+				THESTARTPORTAL = this.justAdded();
 				break;
 			case 2006:
 				this.list.push(new endPortal(x, y, this.zindex.objects));

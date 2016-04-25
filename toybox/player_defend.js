@@ -48,8 +48,8 @@ function player_defend(x, y, z) {
 	}
 	
 	this.followPlayer = function() {
-		this.x = theObjectFactory.list[PLAYER_ID].x;
-		this.y = theObjectFactory.list[PLAYER_ID].y;
+		this.x = THEPLAYER.x;
+		this.y = THEPLAYER.y;
 	}
 	
 	this.deathTimerTick = function() {

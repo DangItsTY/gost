@@ -47,9 +47,9 @@ function player_attack(x, y, z) {
 	scene.add(this.sprite);
 	
 	this.followPlayer = function() {
-		this.vx = theObjectFactory.list[PLAYER_ID].vx;
-		this.x = theObjectFactory.list[PLAYER_ID].x + this.direction;
-		this.y = theObjectFactory.list[PLAYER_ID].y;
+		this.vx = THEPLAYER.vx;
+		this.x = THEPLAYER.x + this.direction;
+		this.y = THEPLAYER.y;
 	}
 	
 	this.damage = function(source) {
