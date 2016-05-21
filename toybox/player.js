@@ -50,7 +50,7 @@ function player(x, y, z) {
 	this.reflectTimer = 0;
 	this.reflectTimerMax = 0.25;
 	this.defendTimer = 0;
-	this.defendTimerMax = 1.0;
+	this.defendTimerMax = 0.5;
 	this.jumpTimer = 0;
 	this.jumpTimerMax = 0.25;
 	this.attackTimer = 0;
@@ -62,6 +62,17 @@ function player(x, y, z) {
 	this.sprite.position.set(this.x, this.y, this.z);
 	this.sprite.scale.set(1, 1, 1);
 	scene.add(this.sprite);
+	
+	//	Sounds
+	this.jumpSE = document.getElementById("jump_se");
+	this.jumpSE.volume = 0.5;
+	this.jumpSE.loop = false;
+	this.attackSE = document.getElementById("attack_se");
+	this.attackSE.volume = 0.5;
+	this.attackSE.loop = false;
+	this.defendSE = document.getElementById("defend_se");
+	this.defendSE.volume = 0.5;
+	this.defendSE.loop = false;
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Basic Behaviors
@@ -156,16 +167,21 @@ function player(x, y, z) {
 	this.move = function(direction) {
 		if (!(this.moveDisable) && this.dashAirTimer === 0) {
 			//	apply speed
-			this.ax = this.speed*direction;
+			if (this.isGrounded) {
+				this.ax = this.speed*direction;
+			} else {
+				this.ax = 0;
+			}
 			if (Math.abs(this.vx) < 2) {
 				this.vx = 2*direction;
 			}
-			if (Math.sign(this.vx) !== Math.sign(this.ax)) {
+			//	abrupt stop
+			if (Math.sign(this.vx) !== direction) {
 				this.ax = 4*this.speed*direction;
 			}
 			
 			//	max run speed
-			if (Math.abs(this.vx) > this.speed) {
+			if (Math.abs(this.vx) > this.speed && this.isGrounded) {
 				this.vx = (this.vx/Math.abs(this.vx)) * this.speed;
 			}
 			
@@ -200,12 +216,18 @@ function player(x, y, z) {
 				case 0:
 					this.jump();
 					this.jumpTimer = this.jumpTimerMax;
+					this.jumpSE.currentTime = 0;
+					this.jumpSE.play();
 					break;
 				case 1:
 					this.attackTimer = 0.001;
+					this.attackSE.currentTime = 0;
+					this.attackSE.play();
 					break;
 				case 2:
 					this.reflect();
+					this.defendSE.currentTime = 0;
+					this.defendSE.play();
 					break;
 				default:
 			}
@@ -226,12 +248,16 @@ function player(x, y, z) {
 			switch(this.actionState) {
 				case 0:
 					this.jumpTimer = 0;
+					this.jumpSE.currentTime = 0.9;
 					break;
 				case 1:
 					this.attack();
+					this.attackSE.currentTime = 2.0;
 					break;
 				case 2:
 					this.defend();
+					this.defendSE.currentTime = 1.75;
+					this.defendSE.play();
 					break;
 				default:
 			}

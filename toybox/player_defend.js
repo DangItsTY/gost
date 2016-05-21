@@ -33,7 +33,7 @@ function player_defend(x, y, z) {
 	this.isInvincible = true;
 	
 	//	Timers
-	this.deathTimerMax = 1.0;
+	this.deathTimerMax = 0.5;
 	this.deathTimer = this.deathTimerMax;
 	
 	//	Sprite	
