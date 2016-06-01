@@ -51,11 +51,13 @@
 <script src="toybox/player_reflect.js"></script>
 <script src="toybox/grass.js"></script>
 <script src="toybox/rock.js"></script>
+<script src="toybox/tree.js"></script>
 <script src="toybox/imploder.js"></script>
 <script src="toybox/spit.js"></script>
 <script src="toybox/golem.js"></script>
 <script src="toybox/geolader.js"></script>
 <script src="toybox/stumper.js"></script>
+<script src="toybox/sicker.js"></script>
 <script src="toybox/startPortal.js"></script>
 <script src="toybox/endPortal.js"></script>
 <script src="toybox/background.js"></script>
@@ -89,6 +91,8 @@
 	//	Questions
 	//	is it too floaty?
 	//	should i even tutorial, or just jump straight into the puzzles and let players find out?
+	
+	//	automatic image loader: "refresh" to generate scripts with exact same names as pngs as well as refactors entire app
 	
 	//	Hacks:
 	var hack1 = false;
@@ -188,7 +192,7 @@
 	var FRICTION_POWER = 24;
 	var THEPLAYER = null;
 	var THESTARTPORTAL = null;
-	var game_level = 1;
+	var game_level = 9;
 	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*

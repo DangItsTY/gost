@@ -126,6 +126,114 @@ function endPortal(x, y, z) {
 	scene.add(this.sprite);
 }
 
+function shocker(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_shocker, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function exploder(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_exploder, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function hander(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_hander, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function fisher(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_fisher, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function sicker(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_sicker, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function jakward(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_jakward, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function zombier(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_zombier, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function eyeballer(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_eyeballer, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
+function tree(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_tree, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 1, 1);
+	scene.add(this.sprite);
+}
+
 function cursor(x, y, z) {
 	this.x = Math.floor((x - ((window.innerWidth - 1600) / 2)) / 50);
 	this.y = Math.floor((y - ((window.innerHeight - 900) / 2)) / 50);
@@ -137,8 +245,8 @@ function cursor(x, y, z) {
 	scene.add(this.sprite);
 	this.object_id = 1001;
 	this.size = 1;
-	this.numOfTiles = 2;
-	this.numOfObjects = 6;
+	this.numOfTiles = 3;
+	this.numOfObjects = 14;
 	
 	this.move = function(x, y) {
 		switch(this.size) {

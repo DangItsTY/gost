@@ -22,6 +22,9 @@ function factory() {
 			case 1002:
 				this.list.push(new rock(x, y, this.zindex.objects));
 				break;
+			case 1003:
+				this.list.push(new tree(x, y, this.zindex.objects));
+				break;
 			case 2001:
 				this.list.push(new imploder(x, y, this.zindex.objects));
 				break;
@@ -39,6 +42,30 @@ function factory() {
 				break;
 			case 2006:
 				this.list.push(new endPortal(x, y, this.zindex.objects));
+				break;
+			case 2007:
+				this.list.push(new shocker(x, y, this.zindex.objects));
+				break;
+			case 2008:
+				this.list.push(new exploder(x, y, this.zindex.objects));
+				break;
+			case 2009:
+				this.list.push(new hander(x, y, this.zindex.objects));
+				break;
+			case 2010:
+				this.list.push(new fisher(x, y, this.zindex.objects));
+				break;
+			case 2011:
+				this.list.push(new sicker(x, y, this.zindex.objects));
+				break;
+			case 2012:
+				this.list.push(new jakward(x, y, this.zindex.objects));
+				break;
+			case 2013:
+				this.list.push(new zombier(x, y, this.zindex.objects));
+				break;
+			case 2014:
+				this.list.push(new eyeballer(x, y, this.zindex.objects));
 				break;
 			default:
 				this.list.push(new wall(x, y, this.zindex.objects));			
