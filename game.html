@@ -60,6 +60,8 @@
 <script src="toybox/sicker.js"></script>
 <script src="toybox/startPortal.js"></script>
 <script src="toybox/endPortal.js"></script>
+<script src="toybox/shocker.js"></script>
+<script src="toybox/bolt.js"></script>
 <script src="toybox/background.js"></script>
 <script src="scripts/controls.js"></script>
 <script src="scripts/assets.js"></script>
@@ -79,6 +81,8 @@
 	//	preload the images
 	//	can i draw just one image, and have objects associated with that texture?
 	//	add fast fall mechanic?
+	//	put asia art and sounds in the game
+	//	create a deep learning ai that can play this game, and see if a level is too difficult
 	
 	//	Notes:
 	//	Singletons shouldn't be called on through other methods
@@ -93,6 +97,9 @@
 	//	should i even tutorial, or just jump straight into the puzzles and let players find out?
 	
 	//	automatic image loader: "refresh" to generate scripts with exact same names as pngs as well as refactors entire app
+	
+	//	optimizations:
+	//	minify files
 	
 	//	Hacks:
 	var hack1 = false;
@@ -192,7 +199,7 @@
 	var FRICTION_POWER = 24;
 	var THEPLAYER = null;
 	var THESTARTPORTAL = null;
-	var game_level = 1;
+	var game_level = 0;
 	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
@@ -319,6 +326,8 @@
 			function(val) {
 				document.getElementById("loading_region").style.display = "none";
 				theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
+				
+				//	lazy programming
 				theObjectFactory.create(new player(THESTARTPORTAL.x, THESTARTPORTAL.y, theObjectFactory.zindex.objects));
 				theController.register(theObjectFactory.justAdded());
 				THEPLAYER = theObjectFactory.justAdded();

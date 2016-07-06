@@ -22,4 +22,5 @@ function loadAssets() {
 	assets_zombier = THREE.ImageUtils.loadTexture("/assets/images/zombier.png");
 	assets_eyeballer = THREE.ImageUtils.loadTexture("/assets/images/eyeballer.png");
 	assets_tree = THREE.ImageUtils.loadTexture("/assets/images/tree.png");
+	assets_bolt = THREE.ImageUtils.loadTexture("/assets/images/bolt.png");
 }
