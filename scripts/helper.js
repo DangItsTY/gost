@@ -11,6 +11,16 @@ function helper() {
 		}
 	};
 	
+	this.isInRange = function(origin, target, range) {
+		//	Returns the squared distance between two objects, if within range
+		var distance = (Math.pow(target.x - origin.x, 2) + Math.pow(target.y - origin.y, 2));
+		if (distance <= Math.pow(range, 2)) {
+			return distance;
+		} else {
+			return null;
+		}
+	}
+	
 	this.assert = function(expect, actual) {
 		return (expect === actual) ? true : false;
 	};

@@ -27,7 +27,7 @@ function imploder(x, y, z) {
 	//	Collision Info
 	this.prevX = 0;
 	this.prevY = 0;
-	this.collisionSize = 1;
+	this.collisionSize = 0.5;
 	this.collisionType = "solid";
 	
 	//	States
