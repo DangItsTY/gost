@@ -58,6 +58,7 @@ function fisher(x, y, z) {
 		
 		var val = theHelper.isInRange(this, THEPLAYER, this.madRange);
 		if (val) {
+			this.sprite.material.color.set(0xFF0000);
 			this.actionState = 2;
 			this.speed = 8;
 			
@@ -67,6 +68,7 @@ function fisher(x, y, z) {
 				this.jumpTimer = 0;
 			}
 		} else {
+			this.sprite.material.color.set(0xFFFFFF);
 			this.actionState = 1;
 			this.jumpTimer = this.jumpTimerMax;
 		}
