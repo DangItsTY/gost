@@ -14,7 +14,7 @@ function spit(x, y, z) {
 	this.ax = 0;
 	this.ay = 0;
 	this.speed = 8;
-	this.jumpSpeed = 4;
+	this.jumpSpeed = 0;
 	this.direction = 1;
 	this.weight = 0;
 	this.strength = 1;
@@ -49,6 +49,7 @@ function spit(x, y, z) {
 	
 	this.move = function() {
 		this.vx = this.speed*this.direction;
+		this.vy = this.jumpSpeed*UP_DIRECTION;
 	}
 	
 	this.damage = function(source) {
