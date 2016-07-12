@@ -4,7 +4,7 @@ function imploder(x, y, z) {
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Entity Info
 	this.name = "imploder";
-	this.id = 2;
+	this.id = 2001;
 	this.type = "enemy";
 	this.team = -1;
 	
@@ -27,7 +27,7 @@ function imploder(x, y, z) {
 	//	Collision Info
 	this.prevX = 0;
 	this.prevY = 0;
-	this.collisionSize = 0.5;
+	this.collisionSize = 1.0;
 	this.collisionType = "solid";
 	
 	//	States
@@ -51,7 +51,7 @@ function imploder(x, y, z) {
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	//	Basic Behaviors
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	this.act = function() {		
+	this.act = function() {
 		if (this.moveTimer <= 1) {
 			this.move();
 			this.actionState = 1;
