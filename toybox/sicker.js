@@ -1,7 +1,7 @@
 function sicker(x, y, z) {
 	//	Entity Info
 	this.name = "sicker";
-	this.id = 2;
+	this.id = 2011;
 	this.type = "enemy";
 	this.team = -1;
 	
@@ -34,6 +34,8 @@ function sicker(x, y, z) {
 	this.attackReady = false;
 	
 	//	Timers
+	this.invincibleHitTimer = 0;
+	this.invincibleHitTimerMax = 0.3;
 	
 	//	Sprite
 	this.material = new THREE.SpriteMaterial({map: assets_sicker, color: 0xFFFFFF, fog: true});
@@ -64,27 +66,24 @@ function sicker(x, y, z) {
 	//	Collisions
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 	this.collide_setup = function() {
-
 	};
 	
 	this.collide_begin = function(target) {
-
+		if (target.type === "player" && this.invincibleHitTimer === 0) {
+			target.damage(this);
+		}
 	};
 	
 	this.collide_down = function(target) {
-
 	};
 	
 	this.collide_left = function(target) {
-
 	};
 	
 	this.collide_right = function(target) {
-
 	};
 	
 	this.collide_up = function(target) {
-
 	};
 	
 	this.collide_end = function(target) {
