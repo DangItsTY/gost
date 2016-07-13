@@ -83,7 +83,7 @@ function spit(x, y, z) {
 		if (target.team === this.team*-1) {
 			target.damage(this);
 		}
-		if (target.team !== this.team && target.type !== "projectile" && !(target.isInvincible)) {
+		if (target.team === this.team*-1 && target.type !== "projectile" && !(target.isInvincible)) {
 			this.alive = false;
 		}
 	};
