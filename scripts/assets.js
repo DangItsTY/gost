@@ -11,6 +11,7 @@ function loadAssets() {
 	assets_background = THREE.ImageUtils.loadTexture("/assets/images/background.png");
 	assets_imploder = THREE.ImageUtils.loadTexture("/assets/images/imploder.png");
 	assets_planter = THREE.ImageUtils.loadTexture("/assets/images/planter.png");
+	assets_planter_body = THREE.ImageUtils.loadTexture("/assets/images/planter.png");
 	assets_spit = THREE.ImageUtils.loadTexture("/assets/images/spit.png");
 	assets_candy = THREE.ImageUtils.loadTexture("/assets/images/candy.png");
 	assets_shocker = THREE.ImageUtils.loadTexture("/assets/images/shocker.png");

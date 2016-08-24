@@ -73,6 +73,9 @@ function factory() {
 			case 2014:
 				this.list.push(new eyeballer(x, y, this.zindex.objects));
 				break;
+			case 2015:
+				this.list.push(new planter(x, y, this.zindex.objects));
+				break;
 			default:
 		}
 	};
