@@ -33,7 +33,7 @@ function fisher(x, y, z) {
 	//	States
 	this.actionState = 1;
 	this.alive = true;
-	this.isGrounded = true;
+	this.isGrounded = false;
 	this.madRange = 4;
 	
 	//	Timers

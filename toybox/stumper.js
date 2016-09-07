@@ -30,7 +30,7 @@ function stumper(x, y, z) {
 	//	States
 	this.actionState = 1;
 	this.alive = true;
-	this.isGrounded = true;
+	this.isGrounded = false;
 	this.attackReady = false;
 	
 	//	Timers

@@ -35,7 +35,7 @@ function player(x, y, z) {
 	this.alive = true;
 	this.wallClimb = false;
 	this.moveDisable = false;
-	this.isGrounded = true;
+	this.isGrounded = false;
 	this.isInvincible = false;
 	
 	//	Timers

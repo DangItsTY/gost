@@ -90,6 +90,9 @@
 	//	add fast fall mechanic?
 	//	put asia art and sounds in the game
 	//	create a deep learning ai that can play this game, and see if a level is too difficult
+	//	figure out a way to not make enemies spawn below (collision probably?), see factory for temp solution (y+UP_DIRECTION)
+	//	make ranges for enemies
+	//	make sure they don't fall off
 	
 	//	Notes:
 	//	Singletons shouldn't be called on through other methods
@@ -198,7 +201,7 @@
 	camera.position.y = 8.5;
 	camera.position.z = 0;
 	camera.rotation.x = 180 * Math.PI/180;
-	time_then = window.performance.now();
+	time_then = window.performance.now();;
 	var ROWS_TOTAL = 18;
 	var COLUMNS_TOTAL = 32;
 	var UP_DIRECTION = -1;	//	because the grid is 0, 0 at the very top left
@@ -331,6 +334,7 @@
 		);
 		iPromise.then(
 			function(val) {
+				time_then = window.performance.now();
 				document.getElementById("loading_region").style.display = "none";
 				theObjectFactory.create(new background(15.5, 8.5, theObjectFactory.zindex.background));
 				
@@ -545,9 +549,6 @@
 		//	calculate delta frame time
 		time_now = window.performance.now();
 		time_delta = time_now - time_then;
-		if (time_delta > 500) {
-			time_delta = 0;
-		}
 		modifier = time_delta/1000;
 		time_then = time_now;
 				

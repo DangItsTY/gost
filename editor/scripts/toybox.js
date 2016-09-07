@@ -222,6 +222,18 @@ function eyeballer(x, y, z) {
 	scene.add(this.sprite);
 }
 
+function planter(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.id = 1;
+	this.material = new THREE.SpriteMaterial({map: assets_planter, color: 0xFFFFFF, fog: true});
+	this.sprite = new THREE.Sprite(this.material);
+	this.sprite.position.set(this.x, this.y, this.z);
+	this.sprite.scale.set(1, 2, 1);
+	scene.add(this.sprite);
+}
+
 function tree(x, y, z) {
 	this.x = x;
 	this.y = y;
@@ -246,7 +258,7 @@ function cursor(x, y, z) {
 	this.object_id = 1001;
 	this.size = 1;
 	this.numOfTiles = 3;
-	this.numOfObjects = 14;
+	this.numOfObjects = 15;
 	
 	this.move = function(x, y) {
 		switch(this.size) {

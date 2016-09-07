@@ -17,12 +17,15 @@
 	</style>
 </head>
 <body>
-<div style="width:100px; position:absolute; left:0px; top:0px;">
-	1 - Black<br>
-	2 - Red<br>
-	3 - Delete<br>
+<div style="width:200px; position:absolute; left:0px; top:0px;">
+	1 - Next Tile<br>
+	2 - Previous Tile<br>
+	3 - Next Entity<br>
+	4 - Previous Entity<br>
+	5 - Delete Tool<br>
 	0 - Toggle cursor size<br>
-	Left Click To Fill<br>
+	Left Click To Fill/Use<br>
+	Make sure to put a blue and red candy!<br>
 </div>
 <div style="width:100px; position:relative; float:right;">
 	<button onclick="exportData()">Export</button><br><br>
@@ -50,6 +53,7 @@
 	//	exporting, how will i display the data?
 	//	hide gridlines
 	//	dynamically resize the grid
+	//	show some indicator of current object, maybe a transparent cursor of the type?
 	
 	//	Notes:
 	//	Singletons shouldn't be called on through other methods

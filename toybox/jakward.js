@@ -33,7 +33,7 @@ function jakward(x, y, z) {
 	//	States
 	this.actionState = 1;
 	this.alive = true;
-	this.isGrounded = true;
+	this.isGrounded = false;
 	this.maxSpeed = 8;
 	
 	//	Timers

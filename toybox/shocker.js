@@ -33,7 +33,7 @@ function shocker(x, y, z) {
 	//	States
 	this.actionState = 1;
 	this.alive = true;
-	this.isGrounded = true;
+	this.isGrounded = false;
 	
 	//	Timers
 	this.moveTimer = 0;

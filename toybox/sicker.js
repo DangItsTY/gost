@@ -18,7 +18,7 @@ function sicker(x, y, z) {
 	this.direction = 1;
 	this.weight = 0;
 	this.strength = 1;
-	this.health = 1;
+	this.health = 999;
 	this.damageType = "none";
 	
 	//	Collision Info
@@ -30,7 +30,7 @@ function sicker(x, y, z) {
 	//	States
 	this.actionState = 1;
 	this.alive = true;
-	this.isGrounded = true;
+	this.isGrounded = false;
 	this.attackReady = false;
 	
 	//	Timers
@@ -43,18 +43,21 @@ function sicker(x, y, z) {
 	this.sprite.position.set(this.x, this.y, this.z);
 	scene.add(this.sprite);
 	
-	this.act = function() {		
+	this.act = function() {
+		if (this.invincibleHitTimer > 0) {
+			this.invincibleHitTimer -= modifier;
+			this.sprite.material.opacity = 0.5;
+			this.moveTimer = 0;
+			this.actionState = 1;
+		} else {
+			this.invincibleHitTimer = 0;
+			this.sprite.material.opacity = 1;
+		}
 	};
 	
 	this.damage = function(source) {
 		if (this.invincibleHitTimer === 0) {
 			this.health -= source.strength;
-			var magnitude = Math.abs(source.vx);
-			if (magnitude < 2) {
-				magnitude = 2
-			}
-			this.vx = magnitude*source.direction;
-			this.vy = 4*UP_DIRECTION;
 			this.invincibleHitTimer = this.invincibleHitTimerMax;
 		}
 		if (this.health <= 0) {
