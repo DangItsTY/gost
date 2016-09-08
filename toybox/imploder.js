@@ -17,7 +17,7 @@ function imploder(x, y, z) {
 	this.ax = 0;
 	this.ay = 0;
 	this.speed = 4;
-	this.jumpSpeed = 4;
+	this.jumpSpeed = 6;
 	this.direction = 1;
 	this.weight = 1;
 	this.strength = 1;

@@ -21,7 +21,7 @@ function shocker(x, y, z) {
 	this.direction = 1;
 	this.weight = 1;
 	this.strength = 1;
-	this.health = 2;
+	this.health = 8;
 	this.damageType = "none";
 	
 	//	Collision Info

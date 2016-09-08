@@ -21,7 +21,7 @@ function eyeballer(x, y, z) {
 	this.direction = 1;
 	this.weight = 1;
 	this.strength = 1;
-	this.health = 1;
+	this.health = 999;
 	this.damageType = "none";
 	
 	//	Collision Info
