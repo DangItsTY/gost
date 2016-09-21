@@ -38,7 +38,7 @@ function exploder(x, y, z) {
 	
 	//	Timers
 	this.explodeTimer = 0;
-	this.explodeTimerMax = 2;
+	this.explodeTimerMax = 0.5;
 	this.invincibleHitTimer = 0;
 	this.invincibleHitTimerMax = 0.3;
 	
