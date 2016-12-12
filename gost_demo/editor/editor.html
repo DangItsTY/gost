@@ -1,0 +1,319 @@
+<html>
+<head>
+<link rel="shortcut icon" href="">
+<title>Level Editor</title>
+<style>
+	body { margin: 0; }
+	canvas {
+		padding: 0;
+		margin: auto;
+		display: block;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+	</style>
+</head>
+<body>
+<div style="width:200px; position:absolute; left:0px; top:0px;">
+	1 - Next Tile<br>
+	2 - Previous Tile<br>
+	3 - Next Entity<br>
+	4 - Previous Entity<br>
+	5 - Delete Tool<br>
+	0 - Toggle cursor size<br>
+	Left Click To Fill/Use<br>
+	Make sure to put a blue and red candy!<br>
+</div>
+<div style="width:100px; position:relative; float:right;">
+	<button onclick="exportData()">Export</button><br><br>
+	<button onclick="importData()">Import</button><br><br>
+	<div>Objects: <span id="object_count"></span></div>
+</div>
+<div id="canvas_region" style="width:100%; height:100%;">
+</div>
+<div id="data_region_wrapper" style="display:block;">
+	<div>Your JSON Data:</div>
+	<div id="data_region"></div>
+</div>
+<!--IMPORT SCRIPTS START-->
+<script src="party/three.min.js"></script>
+<script src="scripts/helper.js"></script>
+<script src="scripts/factory.js"></script>
+<script src="scripts/toybox.js"></script>
+<script src="scripts/controls.js"></script>
+<script src="scripts/assets.js"></script>
+<!--IMPORT SCRIPTS END-->
+
+
+<script>
+	//	TyDo:
+	//	exporting, how will i display the data?
+	//	hide gridlines
+	//	dynamically resize the grid
+	//	show some indicator of current object, maybe a transparent cursor of the type?
+	
+	//	Notes:
+	//	Singletons shouldn't be called on through other methods
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Set up keyboard controls
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	var keysDown = {};	//	Holds a list of all keys that are down
+	var keysUp = {};	//	Keys that are released
+	addEventListener("keydown", function (e) {
+		keysDown[e.keyCode] = true;
+	}, false);
+	addEventListener("keyup", function (e) {
+		keysUp[e.keyCode] = true;
+		delete keysDown[e.keyCode];
+	}, false);
+
+	//	Key Mapping
+	var key = new Array();
+	key["up"] = 87;
+	key["down"] = 83;
+	key["left"] = 65;
+	key["right"] = 68;
+	key["y"] = 78;
+	key["x"] = 74;
+	key["b"] = 69;
+	key["a"] = 81;
+	key["l"] = 16;
+	key["r"] = 186;
+	key["start"] = 80;
+	key["select"] = 13;
+	key["spacebar"] = 32;
+	key["0"] = 48;
+	key["1"] = 49;
+	key["2"] = 50;
+	key["3"] = 51;
+	key["4"] = 52;
+	key["5"] = 53;
+	key["6"] = 54;
+	key["7"] = 55;
+	key["8"] = 56;
+	key["9"] = 57;
+	
+	//	Mouse Coordinates
+	var mouseX;
+	var mouseY;
+	document.onmousemove = function(e) {
+		mouseX = e.clientX;
+		mouseY = e.clientY;
+	};
+	document.onmousedown = function(e) {
+		if (mouseX >= ((window.innerWidth - 1600) / 2) && mouseX <= window.innerWidth - ((window.innerWidth - 1600) / 2) &&
+			mouseY >= ((window.innerHeight - 900) / 2) && mouseY <= window.innerHeight - ((window.innerHeight - 900) / 2)) {
+			keysDown["mouse"] = true;
+			delete keysUp["mouse"];
+		}
+	};
+	document.onmouseup = function(e) {
+		mouseUp();
+		keysUp["mouse"] = true;
+		delete keysDown["mouse"];
+	};
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Create the scene
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	var scene = new THREE.Scene();
+	var camera = new THREE.OrthographicCamera(-16, 16, 9, -9, -1000, 1000);
+	var renderer = new THREE.WebGLRenderer();
+	renderer.setSize(1600, 900);
+	document.getElementById("canvas_region").appendChild(renderer.domElement);
+
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Set up game engine things
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	renderer.setClearColor('#FFFFFF');
+	camera.position.x = 15.5;
+	camera.position.y = 8.5;
+	camera.position.z = 0;
+	camera.rotation.x = 180 * Math.PI/180;
+	time_then = Date.now();
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Initialize game with objects
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	TyNote: theSomething are all singletons and there should exist only one
+	var theHelper = new helper();
+	var theTestHelper = new test_helper();
+	var theObjectFactory = new factory();
+	var theGrid = new grid(32, 18);
+	var theCursor = new cursor(mouseX, mouseY, theObjectFactory.zindex.cursor);
+	
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Initial scripts to run
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	loadAssets();
+	draw_gridlines();
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Playground
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*	
+	function gridlines(num, dir, size) {
+		//	can refactor this method by just creating an image and drawing it, instead of drawing all of these lines
+		if (size === 's') {
+			this.material = new THREE.SpriteMaterial({map: null, color: 0x000000, fog: true, opacity: 0.3});
+			this.sprite = new THREE.Sprite(this.material);
+			if (dir === 'v') {
+				this.sprite.position.set(1*num-0.5, 8.5, theObjectFactory.zindex.lines);
+				this.sprite.scale.set(0.1, 18, 1);
+			} else {
+				this.sprite.position.set(15.5, 1*num-0.5, theObjectFactory.zindex.lines);
+				this.sprite.scale.set(32, 0.1, 1);
+			}
+		} else {
+			this.material = new THREE.SpriteMaterial({map: null, color: 0x000000, fog: true, opacity: 0.6});
+			this.sprite = new THREE.Sprite(this.material);
+			if (dir === 'v') {
+				this.sprite.position.set(2*num-0.5, 8.5, theObjectFactory.zindex.lines);
+				this.sprite.scale.set(0.1, 18, 1);
+			} else {
+				this.sprite.position.set(15.5, 2*num-0.5, theObjectFactory.zindex.lines);
+				this.sprite.scale.set(32, 0.1, 1);
+			}
+		}
+		scene.add(this.sprite);
+	}
+	
+	function draw_gridlines() {
+		for (var i = 0; i < 17; i++) {
+			gridlines(i, 'v');
+		}
+		for (var i = 0; i < 10; i++) {
+			gridlines(i, 'h');
+		}
+		for (var i = 1; i < 32; i++) {
+			gridlines(i, 'v', 's');
+		}
+		for (var i = 1; i < 18; i++) {
+			gridlines(i, 'h', 's');
+		}
+	}
+	
+	function exportData() {
+		document.getElementById("data_region_wrapper").style.display = "inline-block";
+		document.getElementById("data_region").innerHTML = JSON.stringify(theGrid.cells);
+	}
+	
+	function importData() {
+		var data = prompt("Your Data: ", JSON.stringify(theGrid.cells));
+		
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			theObjectFactory.destroy(i);
+		}
+		theGrid.cells = JSON.parse(data);
+		
+		var object_id;
+		for (i = 0; i < theGrid.rows; i++) {
+			for (j = 0; j < theGrid.cols; j++) {
+				object_id = theGrid.cells[i][j];
+				if (object_id > 0) {
+					theObjectFactory.create_map(i, j, object_id);
+				}
+			}
+		}
+	}
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Batches
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	function runControls() {
+		//	Should break these all out into functions so this section is pretty clean, and most logic is in controls.js
+		if (keysDown["mouse"]) {
+			mouseDown();
+		}		
+		if (key["1"] in keysDown && !(keysUp["1"])) {
+			theCursor.nextTile();
+			keysUp["1"] = true;
+		}
+		if (key["2"] in keysDown && !(keysUp["2"])) {
+			theCursor.previousTile();
+			keysUp["2"] = true;
+		}
+		if (key["3"] in keysDown && !(keysUp["3"])) {
+			theCursor.nextObject();
+			keysUp["3"] = true;
+		}
+		if (key["4"] in keysDown && !(keysUp["4"])) {
+			theCursor.previousObject();
+			keysUp["4"] = true;
+		}
+		if (key["5"] in keysDown && !(keysUp["5"])) {
+			theCursor.object_id = 0;
+			keysUp["5"] = true;
+		}
+		if (keysDown[key["0"]] && !keysUp[key["0"]]) {
+			theCursor.switch();
+			keysUp[key["0"]] = true;
+		}
+		if (!keysDown[key["0"]]) {
+			keysUp[key["0"]] = false;
+		}
+		if (!(key["1"] in keysDown)) {
+			delete keysUp["1"];
+		}
+		if (!(key["2"] in keysDown)) {
+			delete keysUp["2"];
+		}
+		if (!(key["3"] in keysDown)) {
+			delete keysUp["3"];
+		}
+		if (!(key["4"] in keysDown)) {
+			delete keysUp["4"];
+		}
+		if (!(key["5"] in keysDown)) {
+			delete keysUp["5"];
+		}
+	}
+	
+	function runCollisions(base_x, base_y) {
+		for (i = 0; i < theObjectFactory.list.length; i++) {
+			if (collision_point(base_x, base_y, theObjectFactory.list[i].x, theObjectFactory.list[i].y)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	function runActs() {
+		theCursor.move(mouseX, mouseY);
+	}
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	The game loop
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	function gameloop() {
+		requestAnimationFrame(gameloop);
+		
+		//	calculate delta frame time
+		time_now = Date.now();
+		time_delta = time_now - time_then;
+		modifier = time_delta/1000;
+		time_then = time_now;
+		
+		//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+		//	Do things (batch scripts)
+		//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+		runControls();
+		//runCollisions();	moved to mouseDown for optimization
+		runActs();		
+		renderer.render(scene, camera);
+	}
+	gameloop();
+</script>
+</body>
+</html>
