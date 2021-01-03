@@ -121,7 +121,7 @@ function loader() {
 		{"data": "levels/level_explodinghallway.txt"},
 		{"data": "levels/level_eyeballer.txt"},
 		{"data": "levels/level_fallandhope.txt"},
-		{"data": "levels/level_fallingzomibes.txt"},
+		{"data": "levels/level_fallingzombies.txt"},
 		{"data": "levels/level_fisher.txt"},
 		{"data": "levels/level_floatingislands.txt"},
 		{"data": "levels/level_funnyplatforms.txt"},
@@ -152,7 +152,7 @@ function loader() {
 		{"data": "levels/level_zigzag.txt"},
 		{"data": "levels/level_zombie.txt"},
 		{"data": "levels/level_zombiepit.txt"},
-		{"data": "levels/level_zombietunnel.txt"},
+		{"data": "levels/level_zombietunnel.txt"}
 	];
 
 	this.load = function(level) {

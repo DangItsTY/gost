@@ -191,6 +191,16 @@
 	var windowHeight = 90 * windowSize;
 	renderer.setSize(windowWidth, windowHeight);
 	document.getElementById("canvas_region").appendChild(renderer.domElement);
+	
+	
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	//	Initialize game with objects
+	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+	var theHelper = new helper();
+	var theTestHelper = new test_helper();
+	var theObjectFactory = new factory();
+	var theTileFactory = new factory();
+	var theController = new controller();
 
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
@@ -209,17 +219,7 @@
 	var FRICTION_POWER = 24;
 	var THEPLAYER = null;
 	var THESTARTPORTAL = null;
-	var game_level = 0;
-	
-	
-	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	//	Initialize game with objects
-	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-	var theHelper = new helper();
-	var theTestHelper = new test_helper();
-	var theObjectFactory = new factory();
-	var theTileFactory = new factory();
-	var theController = new controller();
+	var game_level =  theHelper.roll(49) + 10;
 	
 	
 	//	~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
@@ -235,7 +235,7 @@
 	var music = document.getElementById("bgmusic");
 	music.loop = true;
 	music.volume = 0.1;
-	//music.play();
+	music.play();
 	document.getElementById("message_region").style.display = "none";
 	
 	

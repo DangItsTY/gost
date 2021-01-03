@@ -67,7 +67,7 @@ function endPortal(x, y, z) {
 	
 	this.collide_begin = function(target) {
 		if (target.type === "player") {
-			game_level += 1;
+			game_level = theHelper.roll(49) + 10;
 			gameReset();
 		}
 	};
